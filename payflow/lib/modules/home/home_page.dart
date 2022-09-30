@@ -8,33 +8,27 @@ class HomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: AppColors.primary,
-        title: Text("HomePage"),
+      appBar: PreferredSize(
+        preferredSize: Size.fromHeight(152),
+        child: Container(
+          height: 152,
+          color: AppColors.primary,
+          child: Center(
+            child: ListTile(
+              title: Text("Olá, você"),
+              subtitle: Text("Mantenha suas contas em dia"),
+              trailing: Container(
+                height: 48,
+                width: 48,
+                decoration: BoxDecoration(
+                  color: Colors.black,
+                  borderRadius: BorderRadius.circular(5),
+                ),
+              ),
+            ),
+          ),
+        ),
       ),
-      body: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Text("Welcome to HomePage", textAlign: TextAlign.center),
-          TextButton(
-              onPressed: () async {
-                bool leave = await logout();
-                if (leave) {
-                  Navigator.pushReplacementNamed(context, "/splash");
-                }
-              },
-              child: Text("Logout"))
-        ],
-      )
     );
-  }
-
-  Future<bool> logout() async {
-    SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
-
-    await sharedPreferences.clear();
-    
-    return true;
   }
 }
