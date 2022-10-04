@@ -1,7 +1,13 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:payflow/modules/home/ProductDataModel.dart';
 import 'package:payflow/modules/home/home_controller.dart';
 import 'package:payflow/shared/themes/app_colors.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
+import 'package:http/http.dart' as http;
+import 'package:flutter/services.dart' as rootBundle;
 
 import '../../shared/themes/app_text_styles.dart';
 
@@ -56,7 +62,69 @@ class _HomePageState extends State<HomePage> {
           ),
         ),
       ),
-      body: pages[homeController.currentPage],
+      body: FutureBuilder(
+        future: ReadJsonData(),
+        builder: (context, data) {
+          if (data.hasError) {
+            return Center(child: Text("${data.error}"));
+          } else if (data.hasData) {
+            var items = data.data as List<ProductDataModel>;
+            return ListView.builder(
+                itemCount: items == null ? 0 : items.length,
+                itemBuilder: (context, index) {
+                  return Card(
+                    elevation: 5,
+                    margin: EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                    child: Container(
+                      padding: EdgeInsets.all(8),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Container(
+                            width: 50,
+                            height: 50,
+                            child: Image(
+                              image: NetworkImage(
+                                  items[index].imageURL.toString()),
+                              fit: BoxFit.fill,
+                            ),
+                          ),
+                          Expanded(
+                              child: Container(
+                            padding: EdgeInsets.only(bottom: 8),
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Padding(
+                                  padding: EdgeInsets.only(left: 8, right: 8),
+                                  child: Text(
+                                    items[index].name.toString(),
+                                    style: TextStyle(
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.bold),
+                                  ),
+                                ),
+                                Padding(
+                                  padding: EdgeInsets.only(left: 8, right: 8),
+                                  child: Text(items[index].price.toString()),
+                                )
+                              ],
+                            ),
+                          ))
+                        ],
+                      ),
+                    ),
+                  );
+                });
+          } else {
+            return Center(
+              child: CircularProgressIndicator(),
+            );
+          }
+        },
+      ),
       bottomNavigationBar: Container(
         height: 90,
         child: Row(
@@ -103,5 +171,14 @@ class _HomePageState extends State<HomePage> {
         ),
       ),
     );
+  }
+
+  Future<List<ProductDataModel>> ReadJsonData() async {
+    Uri url = Uri.https("protocoderspoint.com", "/jsondata/productlist.json");
+    final jsondata = await http.get(url);
+    // final jsondata = await Dio().get("https://protocoderspoint.com/jsondata/productlist.json");
+
+    final list = json.decode(jsondata.body.toString()) as List<dynamic>;
+    return list.map((e) => ProductDataModel.fromJson(e)).toList();
   }
 }
