@@ -19,10 +19,11 @@ class AuthController
       Navigator.pushReplacementNamed(context, "/home");
     } else 
     {
-      Navigator.pushReplacementNamed(context, "/login");
+      Navigator.pushReplacementNamed(context, "/home");
     }
   }
-
+  //flutter build apk --release
+  
   Future<void> saveUser(UserModel user) async
   {
     final instance = await SharedPreferences.getInstance();
