@@ -15,7 +15,7 @@ class SetLabelButtons extends StatelessWidget {
     required this.primaryOnPressed,
     required this.secondaryLabel,
     required this.secondaryOnPressed,
-    required this.enablePrimaryColor,
+    this.enablePrimaryColor = false,
   }) : super(key: key);
 
   @override
